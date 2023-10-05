@@ -1,5 +1,5 @@
 import { AnchorProvider } from "@coral-xyz/anchor";
-import { WhirlpoolContext, buildWhirlpoolClient, ORCA_WHIRLPOOL_PROGRAM_ID, PDAUtil, PriceMath, increaseLiquidityQuoteByInputTokenWithParams, increaseLiquidityQuoteByInputToken } from "@orca-so/whirlpools-sdk";
+import { WhirlpoolContext, buildWhirlpoolClient, ORCA_WHIRLPOOL_PROGRAM_ID, PDAUtil, PriceMath, increaseLiquidityQuoteByInputTokenWithParams, increaseLiquidityQuoteByInputToken, TickUtil, TickArrayUtil } from "@orca-so/whirlpools-sdk";
 import { config } from 'dotenv';
 import { DecimalUtil, Percentage } from "@orca-so/common-sdk";
 import Decimal from "decimal.js";
@@ -21,7 +21,8 @@ async function main() {
     console.log("wallet pubkey:", ctx.wallet.publicKey.toBase58());
 
     const DEVNET_WHIRLPOOLS_CONFIG = new web3.PublicKey("2LecshUwdy9xi7meFgHtFJQNSKk4KdTrcpvaB56dP2NQ");
-    const poolAddress = "7qbRF6YsyGuLUVs6Y1q64bdVrfe4ZcUUz1JRdoVNUJnm"; // SOL/USDC
+    //const poolAddress = "HJPjoWUrhoZzkNfRpHuieeFk9WcZWjwy6PBjZ81ngndJ"; // SOL/USDC
+    // old pool - 7qbRF6YsyGuLUVs6Y1q64bdVrfe4ZcUUz1JRdoVNUJnm
 
     const usdc = { mint: new web3.PublicKey("EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v"), decimals: 6 };
     const wsol = { mint: new web3.PublicKey("So11111111111111111111111111111111111111112"), decimals: 9 };
@@ -32,12 +33,15 @@ async function main() {
     const whirlpool_pubkey = PDAUtil.getWhirlpool(
         ORCA_WHIRLPOOL_PROGRAM_ID,
         DEVNET_WHIRLPOOLS_CONFIG,
-        usdc.mint, wsol.mint, tick_spacing).publicKey;
+        wsol.mint,usdc.mint, tick_spacing).publicKey;
     console.log("whirlpool_key:", whirlpool_pubkey.toBase58());
     //const whirlpool = await client.getPool(whirlpool_pubkey);
 
-    const whirlpool = await client.getPool(poolAddress);
+    const whirlpool = await client.getPool(whirlpool_pubkey);
     console.log('whirpool liquidity', whirlpool.getData().liquidity.toString());
+    console.log("whirlpool tick spacing:", whirlpool.getData().tickSpacing);
+    console.log("whirlpool token A:", whirlpool.getTokenAInfo(), " tokenB ", whirlpool.getTokenBInfo());
+       
 
 
     // Get the current price of the pool
@@ -60,8 +64,12 @@ async function main() {
     const whirlpool_data = whirlpool.getData();
     const token_a = whirlpool.getTokenAInfo();
     const token_b = whirlpool.getTokenBInfo();
-    const lower_tick_index = PriceMath.priceToInitializableTickIndex(lower_price, token_a.decimals, token_b.decimals, whirlpool_data.tickSpacing);
-    const upper_tick_index = PriceMath.priceToInitializableTickIndex(upper_price, token_a.decimals, token_b.decimals, whirlpool_data.tickSpacing);
+     let lower_tick_index = PriceMath.priceToInitializableTickIndex(lower_price, token_a.decimals, token_b.decimals, whirlpool_data.tickSpacing);
+     let upper_tick_index = PriceMath.priceToInitializableTickIndex(upper_price, token_a.decimals, token_b.decimals, whirlpool_data.tickSpacing);
+    
+     //lower_tick_index = -443632;
+     //upper_tick_index = 443632;
+
     console.log("lower & upper tick_index:", lower_tick_index, upper_tick_index);
     console.log("lower & upper price:",
         PriceMath.tickIndexToPrice(lower_tick_index, token_a.decimals, token_b.decimals).toFixed(token_b.decimals),
@@ -92,14 +100,16 @@ async function main() {
     console.log("usdc max input:", DecimalUtil.fromBN(quote.tokenMaxB, token_b.decimals).toFixed(token_b.decimals));
 
 
+    console.log('tick spacing', whirlpool.getData().tickSpacing);
+    console.log(TickUtil.getFullRangeTickIndex(8));
+    //process.exit(1);
+
  // Create a transaction
   // Use openPosition method instead of openPositionWithMetadata method
-  const open_position_tx = await whirlpool.openPosition(
+  const open_position_tx = await whirlpool.openPositionWithMetadata(
     lower_tick_index,
     upper_tick_index,
     quote,
-    provider.wallet.publicKey, 
-    provider.wallet.publicKey, 
   );
 
   // Send the transaction

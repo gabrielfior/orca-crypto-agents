@@ -4,15 +4,7 @@
 #!/bin/bash
 
 # Specify the directory you want to work with
-MY_DIRECTORY="./sol_usdc_whirpool_accounts"
-
-# Check if the directory exists
-if [ ! -d "$MY_DIRECTORY" ]; then
-  echo "Directory does not exist: $MY_DIRECTORY"
-  exit 1
-fi
-
-# Specify the directory you want to work with
+MY_DIRECTORY="./whirpool_json_data"
 
 # Check if the directory exists
 if [ ! -d "$MY_DIRECTORY" ]; then

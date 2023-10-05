@@ -18,7 +18,7 @@ ToDo
 
 - Fork Whirpool program, single position locally
 
-    -> Overwritten SOL (So11111111111111111111111111111111111111112.json) and USDC (EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v.json) mint authority using account microscope
+    -> Overwritten USDC (EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v.json) mint authority using account microscope
 
 - Airdrop 100 SOL to a freshly minted keypair (bot1)
 - Execute script for bot 1 to interact with chain (see Anchorpy)
