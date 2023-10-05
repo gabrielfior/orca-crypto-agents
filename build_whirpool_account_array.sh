@@ -1,10 +1,7 @@
-#solana-test-validator -r --bpf-program metaqbxxUerdq28cj1RbAWkYQm3ybzjb6a8bt518x1s metadata.so --account 7FTdQdMqkk5Xc2oFsYR88BuJt2yyCPReTpqr3viH6b6C nft.json  --account 4tSgNWeqtgp2kwRgjTqgpenP4wxfPaVCvganMR2gnd8W metadata.json 
-
-#ls ./sol_usdc_whirpool_accounts > filenames.txt
 #!/bin/bash
 
 # Specify the directory you want to work with
-MY_DIRECTORY="./whirpool_json_data"
+MY_DIRECTORY="./whirpool_json_data_sol_2080"
 
 # Check if the directory exists
 if [ ! -d "$MY_DIRECTORY" ]; then

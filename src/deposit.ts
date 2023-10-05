@@ -26,14 +26,15 @@ async function main() {
 
     const usdc = { mint: new web3.PublicKey("EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v"), decimals: 6 };
     const wsol = { mint: new web3.PublicKey("So11111111111111111111111111111111111111112"), decimals: 9 };
+    const t2080 = {mint: new web3.PublicKey("Dwri1iuy5pDFf2u2GwwsH2MxjR6dATyDv9En9Jk8Fkof"), decimals: 9};
 
-    const tick_spacing = 64;
+    const tick_spacing = 128;//64;
     console.log('whirpool programId', ORCA_WHIRLPOOL_PROGRAM_ID);
     // ToDo - Fetch whirpool using PDAUtil instead of hardcoding pool address
     const whirlpool_pubkey = PDAUtil.getWhirlpool(
         ORCA_WHIRLPOOL_PROGRAM_ID,
         DEVNET_WHIRLPOOLS_CONFIG,
-        wsol.mint,usdc.mint, tick_spacing).publicKey;
+        wsol.mint,t2080.mint, tick_spacing).publicKey;
     console.log("whirlpool_key:", whirlpool_pubkey.toBase58());
     //const whirlpool = await client.getPool(whirlpool_pubkey);
 
@@ -57,6 +58,7 @@ async function main() {
     const lower_price = new Decimal(price.mul(0.97));
     const upper_price = new Decimal(price.mul(1.03));
     const usdc_amount = DecimalUtil.toBN(new Decimal("50" /* devUSDC */), usdc.decimals);
+    const t2080_amount = DecimalUtil.toBN(new Decimal("50" /* devUSDC */), t2080.decimals);
     const slippage = Percentage.fromFraction(10, 1000); // 1%
 
     // Adjust price range (not all prices can be set, only a limited number of prices are available for range specification)
@@ -88,8 +90,8 @@ async function main() {
         tickLowerIndex: lower_tick_index,
         tickUpperIndex: upper_tick_index,
         // Input token and amount
-        inputTokenMint: usdc.mint,
-        inputTokenAmount: usdc_amount,
+        inputTokenMint: t2080.mint, //usdc.mint,
+        inputTokenAmount: t2080_amount,//usdc_amount,
         // Acceptable slippage
         slippageTolerance: slippage,
     });
